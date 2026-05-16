@@ -1,0 +1,185 @@
+<% content_for :page_title, "Dashboard" %>
+
+<%# ── Stats row ──────────────────────────────────────────────────────────── %>
+<% total     = @uploads.size
+   completed = @uploads.count(&:completed?)
+   failed    = @uploads.count(&:failed?)
+   pending   = @uploads.count { |u| u.pending? || u.status == "processing" } %>
+
+<div class="audit-index-page">
+<div class="audit-index-stats">
+  <% [
+    { label: "Total Audits",  value: total,     color: "indigo", icon: "M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" },
+    { label: "Completed",     value: completed, color: "green",  icon: "M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" },
+    { label: "Failed",        value: failed,    color: "red",    icon: "M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" },
+    { label: "In Progress",   value: pending,   color: "amber",  icon: "M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" },
+  ].each do |stat| %>
+    <div class="audit-index-stat-card flex items-center">
+      <div class="audit-index-stat-icon audit-index-stat-icon--<%= stat[:color] %> flex items-center justify-center shrink-0">
+        <svg class="audit-index-stat-icon-svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="<%= stat[:icon] %>"/>
+        </svg>
+      </div>
+      <div>
+        <p class="audit-index-stat-value font-bold"><%= stat[:value] %></p>
+        <p class="audit-index-stat-label mt-0.5"><%= stat[:label] %></p>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%# ── Recent audits table ─────────────────────────────────────────────────── %>
+<div class="audit-index-table-card">
+  <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+    <div>
+      <h2 class="text-sm font-semibold text-gray-900">Recent Audits</h2>
+      <p class="text-xs text-gray-400 mt-0.5"><%= @uploads.size %> total upload<%= "s" if @uploads.size != 1 %></p>
+    </div>
+    <%= link_to new_audit_path, class: "flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-700" do %>
+      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+      </svg>
+      Upload New
+    <% end %>
+  </div>
+
+  <% if @uploads.empty? %>
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+      <div class="flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
+        <svg class="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/>
+        </svg>
+      </div>
+      <p class="text-sm font-medium text-gray-500">No audits yet</p>
+      <p class="text-xs text-gray-400 mt-1">Upload your first Excel workbook to get started</p>
+      <%= link_to "Upload Now", new_audit_path, class: "mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-700" %>
+    </div>
+  <% else %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+            <th class="px-6 py-3 text-left">File</th>
+            <th class="px-6 py-3 text-left">Entity Type</th>
+            <th class="px-6 py-3 text-left">Status</th>
+            <th class="px-6 py-3 text-left">Results</th>
+            <th class="px-6 py-3 text-left">Uploaded</th>
+            <th class="px-6 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          <% @uploads.each do |upload| %>
+            <% report = upload.audit_report %>
+            <tr class="hover:bg-gray-50/60 transition-colors">
+
+              <%# File name %>
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 shrink-0">
+                    <svg class="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-800 truncate max-w-[180px]">
+                      <%= upload.excel_file.attached? ? upload.excel_file.filename : "—" %>
+                    </p>
+                    <p class="text-xs text-gray-400">#<%= upload.id %></p>
+                  </div>
+                </div>
+              </td>
+
+              <%# Free zone %>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">
+                  <%= case upload.free_zone
+                      when "mainland"    then "Mainland"
+                      when "freezone_10" then "Free Zone (10%)"
+                      when "freezone_5"  then "Free Zone (5%)"
+                      else upload.free_zone&.humanize end %>
+                </span>
+              </td>
+
+              <%# Status %>
+              <td class="px-6 py-4">
+                <% status_class = case upload.status
+                   when "completed"  then "bg-green-50 text-green-700 ring-green-200"
+                   when "failed"     then "bg-red-50 text-red-700 ring-red-200"
+                   when "processing" then "bg-blue-50 text-blue-700 ring-blue-200"
+                   else                   "bg-amber-50 text-amber-700 ring-amber-200"
+                   end %>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ring-inset <%= status_class %>">
+                  <% if upload.status == "processing" %>
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                  <% else %>
+                    <span class="w-1.5 h-1.5 rounded-full <%= upload.completed? ? 'bg-green-500' : upload.failed? ? 'bg-red-500' : 'bg-amber-500' %>"></span>
+                  <% end %>
+                  <%= upload.status.capitalize %>
+                </span>
+              </td>
+
+              <%# Pass/fail mini bar %>
+              <td class="px-6 py-4">
+                <% if report %>
+                  <div class="flex items-center gap-3">
+                    <div class="flex gap-1 text-xs font-semibold">
+                      <span class="text-green-600"><%= report.passed %>P</span>
+                      <span class="text-gray-300">/</span>
+                      <span class="text-red-500"><%= report.failed %>F</span>
+                      <span class="text-gray-300">/</span>
+                      <span class="text-amber-500"><%= report.warnings %>W</span>
+                    </div>
+                    <% if report.total > 0 %>
+                      <div class="app-progress-meter app-progress-meter--compact" data-progress-meter>
+                        <div class="app-progress-meter__segment app-progress-meter__segment--passed" data-progress-segment data-width="<%= (report.passed.to_f / report.total * 100).round %>"></div>
+                        <div class="app-progress-meter__segment app-progress-meter__segment--failed" data-progress-segment data-width="<%= (report.failed.to_f / report.total * 100).round %>"></div>
+                        <div class="app-progress-meter__segment app-progress-meter__segment--warning" data-progress-segment data-width="<%= (report.warnings.to_f / report.total * 100).round %>"></div>
+                      </div>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <span class="text-xs text-gray-400">—</span>
+                <% end %>
+              </td>
+
+              <%# Date %>
+              <td class="px-6 py-4 text-xs text-gray-400 whitespace-nowrap">
+                <%= upload.created_at.strftime("%d %b %Y") %>
+                <br><span class="text-gray-300"><%= upload.created_at.strftime("%H:%M") %></span>
+              </td>
+
+              <%# Action %>
+              <td class="px-6 py-4 text-right">
+                <%= link_to audit_path(upload), class: "inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800" do %>
+                  View
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
+                  </svg>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>
+</div>
+
+<script>
+  const initializeProgressMeters = function () {
+    const meters = Array.from(document.querySelectorAll("[data-progress-meter]"));
+    if (!meters.length) return;
+
+    meters.forEach(function (meter) {
+      const segments = Array.from(meter.querySelectorAll("[data-progress-segment]"));
+      segments.forEach(function (segment) {
+        const width = Number(segment.dataset.width || 0);
+        segment.style.width = `${Math.max(width, 0)}%`;
+      });
+    });
+  };
+
+  document.addEventListener("DOMContentLoaded", initializeProgressMeters);
+  document.addEventListener("turbo:load", initializeProgressMeters);
+</script>

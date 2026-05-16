@@ -1,0 +1,4 @@
+web:    bin/rails server
+css:    bin/rails tailwindcss:watch
+worker: cd python && venv/bin/python worker.py
+celery: cd python && venv/bin/celery -A celery_app worker --loglevel=info

@@ -1,0 +1,36 @@
+@layer components {
+  .audits-show [data-audit-shell] {
+    @apply space-y-0;
+  }
+
+  .audits-show .audit-show-file-card {
+    box-shadow: var(--app-shadow-sm);
+    @apply mb-6 rounded-3xl border border-gray-100 bg-white p-6;
+  }
+
+  .audits-show .audit-show-progress-shell {
+    box-shadow: var(--app-shadow-sm);
+    @apply mb-6 rounded-3xl border border-blue-100 bg-white p-6;
+  }
+
+  .audits-show .audit-show-results-shell {
+    box-shadow: var(--app-shadow-sm);
+    @apply mb-6 rounded-3xl border border-gray-100 bg-white p-6;
+  }
+
+  .audits-show .audit-show-filter-cards {
+    @apply gap-3;
+  }
+
+  .audits-show .audit-show-filter-card {
+    @apply rounded-xl p-4;
+  }
+
+  .audits-show .audit-show-filter-value {
+    @apply text-2xl;
+  }
+
+  .audits-show .audit-show-filter-label {
+    @apply text-[11px];
+  }
+}

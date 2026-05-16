@@ -1,0 +1,10 @@
+<% status_cfg = case upload.status
+   when "completed"  then { cls: "bg-green-50 text-green-700 ring-green-200", dot: "bg-green-500" }
+   when "failed"     then { cls: "bg-red-50 text-red-700 ring-red-200", dot: "bg-red-500" }
+   when "processing" then { cls: "bg-blue-50 text-blue-700 ring-blue-200", dot: "bg-blue-500 animate-pulse" }
+   else                   { cls: "bg-amber-50 text-amber-700 ring-amber-200", dot: "bg-amber-500" }
+   end %>
+<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold ring-1 ring-inset <%= status_cfg[:cls] %>">
+  <span class="w-2 h-2 rounded-full <%= status_cfg[:dot] %>"></span>
+  <%= upload.status.capitalize %>
+</span>

@@ -1,0 +1,43 @@
+<svg width="100%" viewBox="0 0 680 200" role="img" xmlns="http://www.w3.org/2000/svg" style="">
+  <title style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Audit QC Logo</title>
+  <desc style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Horizontal logo for Audit QC with a refined shield and magnifier icon on the left and bold wordmark on the right.</desc>
+
+  <defs>
+    <!-- Shield clip -->
+    <clipPath id="shieldClip">
+      <path d="M100,18 L152,36 L152,95 Q152,148 100,168 Q48,148 48,95 L48,36 Z"/>
+    </clipPath>
+  <mask id="imagine-text-gaps-uxob3i" maskUnits="userSpaceOnUse"><rect x="0" y="0" width="680" height="200" fill="white"/><rect x="178" y="59" width="141.970703125" height="64" fill="black" rx="2"/><rect x="324" y="59" width="87" height="64" fill="black" rx="2"/><rect x="179" y="134" width="333.296875" height="19" fill="black" rx="2"/></mask></defs>
+
+  <!-- ── SHIELD ── -->
+  <!-- Outer shield: dark navy -->
+  <path d="M100,18 L152,36 L152,95 Q152,148 100,168 Q48,148 48,95 L48,36 Z" fill="#0C447C" style="fill:rgb(12, 68, 124);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Inner shield face: medium blue -->
+  <path d="M100,28 L144,44 L144,95 Q144,140 100,158 Q56,140 56,95 L56,44 Z" fill="#185FA5" style="fill:rgb(24, 95, 165);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Subtle inner gloss strip -->
+  <path d="M100,28 L144,44 L144,70 Q122,62 100,60 Q78,62 56,70 L56,44 Z" fill="#378ADD" opacity="0.2" style="fill:rgb(55, 138, 221);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.2;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Magnifier glass circle (inside shield) -->
+  <circle cx="96" cy="90" r="26" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" style="fill:none;stroke:rgb(255, 255, 255);color:rgb(255, 255, 255);stroke-width:6px;stroke-linecap:round;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <!-- Magnifier lens inner fill tint -->
+  <circle cx="96" cy="90" r="20" fill="white" opacity="0.08" style="fill:rgb(255, 255, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.08;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Checkmark inside magnifier -->
+  <polyline points="83,90 93,102 112,76" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" style="fill:none;stroke:rgb(255, 255, 255);color:rgb(255, 255, 255);stroke-width:6px;stroke-linecap:round;stroke-linejoin:round;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Magnifier handle -->
+  <line x1="116" y1="110" x2="130" y2="126" stroke="white" stroke-width="7" stroke-linecap="round" style="fill:rgb(0, 0, 0);stroke:rgb(255, 255, 255);color:rgb(255, 255, 255);stroke-width:7px;stroke-linecap:round;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- ── WORDMARK ── -->
+  <text x="182" y="110" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#0C447C" letter-spacing="-1" style="fill:rgb(12, 68, 124);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Arial, sans-serif;font-size:54px;font-weight:700;text-anchor:start;dominant-baseline:auto">Audit</text>
+
+  <text x="328" y="110" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#378ADD" letter-spacing="-1" style="fill:rgb(55, 138, 221);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Arial, sans-serif;font-size:54px;font-weight:700;text-anchor:start;dominant-baseline:auto"> QC</text>
+
+  <!-- Underline rule -->
+  <line x1="182" y1="122" x2="488" y2="122" stroke="#B5D4F4" stroke-width="1.2" mask="url(#imagine-text-gaps-uxob3i)" style="fill:rgb(0, 0, 0);stroke:rgb(181, 212, 244);color:rgb(255, 255, 255);stroke-width:1.2px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Tagline -->
+  <text x="183" y="148" font-family="Arial, sans-serif" font-size="13.5" font-weight="400" fill="#378ADD" letter-spacing="3" style="fill:rgb(55, 138, 221);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Arial, sans-serif;font-size:13.5px;font-weight:400;text-anchor:start;dominant-baseline:auto">QUALITY · COMPLIANCE · CONTROL</text>
+</svg>

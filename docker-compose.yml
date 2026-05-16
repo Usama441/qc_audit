@@ -1,0 +1,124 @@
+services:
+
+  # ── PostgreSQL ─────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    command: ["postgres", "-p", "${DB_PORT:-5432}"]
+    environment:
+      POSTGRES_USER:     ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB:       ${DB_NAME:-qc_audit_development}
+    ports:
+      - "127.0.0.1:${DB_PORT:-5432}:${DB_PORT:-5432}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-qc_audit_development} -p ${DB_PORT:-5432}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── Redis ──────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ── Tailwind CSS watcher ───────────────────────────────────────────────────
+  css:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      RAILS_ENV: ${RAILS_ENV:-development}
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+    volumes:
+      - .:/rails
+      - tailwind_builds:/rails/app/assets/builds
+    command: "bin/rails tailwindcss:watch[always]"
+    restart: unless-stopped
+
+  # ── Rails web app ──────────────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      css:
+        condition: service_started
+    environment:
+      RAILS_ENV:                ${RAILS_ENV:-development}
+      DB_HOST:                  ${DB_HOST:-postgres}
+      DB_PORT:                  ${DB_PORT:-5432}
+      DB_USERNAME:              ${DB_USERNAME:-postgres}
+      DB_PASSWORD:              ${DB_PASSWORD:-password}
+      REDIS_URL:                ${REDIS_URL:-redis://redis:6379/0}
+      RAILS_MASTER_KEY:         ${RAILS_MASTER_KEY}
+      RAILS_SERVE_STATIC_FILES: ${RAILS_SERVE_STATIC_FILES:-true}
+      RAILS_LOG_LEVEL:          ${RAILS_LOG_LEVEL:-info}
+      RAILS_MAX_THREADS:        ${RAILS_MAX_THREADS:-5}
+      WEB_CONCURRENCY:          ${WEB_CONCURRENCY:-2}
+      PORT:                     ${PORT:-3000}
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    volumes:
+      - .:/rails
+      # Named volume keeps compiled CSS from the css watcher service
+      - tailwind_builds:/rails/app/assets/builds
+      - storage:/rails/storage
+    command: "./bin/rails server -b 0.0.0.0 -p ${PORT:-3000}"
+
+  # ── Python Redis queue consumer ────────────────────────────────────────────
+  python_worker:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_URL:           ${REDIS_URL:-redis://redis:6379/0}
+      DATABASE_URL:        ${DATABASE_URL:-postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-qc_audit_development}}
+      MAX_WORKBOOK_SIZE_MB: ${MAX_WORKBOOK_SIZE_MB:-30}
+    volumes:
+      - ./python:/app
+      - storage:/rails/storage
+    command: python worker.py
+
+  # ── Python Celery worker ───────────────────────────────────────────────────
+  celery_worker:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_URL:           ${REDIS_URL:-redis://redis:6379/0}
+      DATABASE_URL:        ${DATABASE_URL:-postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-qc_audit_development}}
+      MAX_WORKBOOK_SIZE_MB: ${MAX_WORKBOOK_SIZE_MB:-30}
+    volumes:
+      - ./python:/app
+      - storage:/rails/storage
+    command: celery -A celery_app worker --loglevel=info --concurrency=2
+
+volumes:
+  postgres_data:
+  storage:
+  tailwind_builds:

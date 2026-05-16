@@ -1,0 +1,56 @@
+@layer components {
+  .audits-index .audit-index-page {
+    @apply space-y-8;
+  }
+
+  .audits-index .audit-index-stats {
+    @apply grid grid-cols-4 gap-4;
+  }
+
+  .audits-index .audit-index-stat-card {
+    background: rgb(15 23 42 / 0.05);
+    border: 1px solid rgb(15 23 42 / 0.1);
+    box-shadow: var(--app-shadow-sm);
+    @apply gap-3 rounded-xl p-4;
+  }
+
+  .audits-index .audit-index-stat-icon {
+    background: rgb(15 23 42 / 0.08);
+    @apply h-9 w-9 rounded-lg;
+  }
+
+  .audits-index .audit-index-stat-icon-svg {
+    @apply h-5 w-5;
+  }
+
+  .audits-index .audit-index-stat-icon--indigo .audit-index-stat-icon-svg {
+    color: #a5b4fc;
+  }
+
+  .audits-index .audit-index-stat-icon--green .audit-index-stat-icon-svg {
+    color: #4ade80;
+  }
+
+  .audits-index .audit-index-stat-icon--red .audit-index-stat-icon-svg {
+    color: #f87171;
+  }
+
+  .audits-index .audit-index-stat-icon--amber .audit-index-stat-icon-svg {
+    color: #fbbf24;
+  }
+
+  .audits-index .audit-index-stat-value {
+    color: #0f172a;
+    @apply text-xl;
+  }
+
+  .audits-index .audit-index-stat-label {
+    color: #475569;
+    @apply text-[11px];
+  }
+
+  .audits-index .audit-index-table-card {
+    box-shadow: var(--app-shadow-sm);
+    @apply overflow-hidden rounded-3xl border border-gray-100 bg-white;
+  }
+}

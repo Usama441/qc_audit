@@ -1,0 +1,215 @@
+<% if upload.failed? %>
+  <div class="bg-white rounded-2xl border border-red-100 shadow-sm p-10 text-center">
+    <div class="flex items-center justify-center w-16 h-16 rounded-full bg-red-50 mx-auto mb-4">
+      <svg class="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>
+      </svg>
+    </div>
+    <p class="text-base font-semibold text-red-700">Audit Failed</p>
+    <p class="text-sm text-gray-400 mt-1"><%= report&.results&.first&.dig("message") || "An unexpected error occurred." %></p>
+  </div>
+<% elsif report.nil? %>
+  <div class="bg-white rounded-2xl border border-amber-100 shadow-sm p-12 text-center">
+    <div class="flex items-center justify-center w-16 h-16 rounded-full bg-amber-50 mx-auto mb-4">
+      <svg class="w-8 h-8 text-amber-400 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+      </svg>
+    </div>
+    <p class="text-base font-semibold text-gray-800">Preparing Audit Checks…</p>
+    <p class="text-sm text-gray-400 mt-1">The workbook is queued and the first check will appear shortly.</p>
+  </div>
+<% elsif report.processing? %>
+<% else %>
+  <% retryable_steps = report.check_progress.select { |step| step["retryable"] } %>
+  <div class="audit-show-results-shell">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Completed Check Log</p>
+        <h3 class="text-lg font-bold text-gray-900 mt-1">Finished audit steps</h3>
+      </div>
+      <p class="text-sm text-gray-400">Live progress is hidden after the run completes.</p>
+    </div>
+
+    <div class="mt-5 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-5 py-4" data-completed-log-summary>
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <p class="text-sm font-semibold text-slate-800">Detailed check log is hidden by default.</p>
+          <p class="text-xs text-slate-500 mt-1">
+            <%= report.check_progress.length %> completed checks
+            <% if retryable_steps.any? %>
+              · <%= retryable_steps.length %> retryable checks available
+            <% end %>
+          </p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <% if retryable_steps.any? %>
+            <%= button_to "Retry All Retryable",
+                  retry_all_checks_audit_path(upload),
+                  method: :post,
+                  class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white hover:bg-slate-700 cursor-pointer" %>
+          <% end %>
+          <button
+            type="button"
+            data-toggle-completed-log
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-white cursor-pointer"
+          >
+            Show Detailed Log
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 space-y-3 hidden" data-completed-log-details>
+      <% report.check_progress.each do |step| %>
+        <% step_cfg =
+          case step["outcome"]
+          when "pass"
+            { dot: "bg-green-500", badge: "bg-green-50 text-green-700", label: "Passed" }
+          when "warning"
+            { dot: "bg-amber-500", badge: "bg-amber-50 text-amber-700", label: "Warning" }
+          when "fail"
+            { dot: "bg-red-500", badge: "bg-red-50 text-red-700", label: "Failed" }
+          else
+            { dot: "bg-gray-400", badge: "bg-gray-50 text-gray-500", label: "Skipped" }
+          end %>
+
+        <div class="rounded-xl border border-gray-100 px-4 py-3">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-3 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0 mt-1.5 <%= step_cfg[:dot] %>"></span>
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-gray-800"><%= step["label"] %></p>
+                <p class="text-xs text-gray-400 mt-1">
+                  Attempt <%= step["attempts"].to_i %>/<%= step["max_attempts"].to_i.nonzero? || 2 %>
+                </p>
+                <p class="text-sm text-gray-500 mt-2"><%= step["message"].presence || "Check completed." %></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <% if step["retryable"] %>
+                <%= button_to "Retry",
+                      retry_check_audit_path(upload, check_key: step["key"]),
+                      method: :post,
+                      class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white hover:bg-slate-700 cursor-pointer" %>
+              <% end %>
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold <%= step_cfg[:badge] %>"><%= step_cfg[:label] %></span>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="flex justify-end">
+        <button
+          type="button"
+          data-toggle-completed-log
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
+        >
+          Hide Detailed Log
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <% pass_pct = report.total > 0 ? (report.passed.to_f / report.total * 100).round : 0 %>
+  <div class="flex items-center justify-between gap-4 mb-4 flex-wrap">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Result Filters</p>
+      <p class="text-sm text-gray-500 mt-1">Click a card to filter the audit log by status.</p>
+    </div>
+    <p id="audit-filter-label" class="text-sm font-semibold text-slate-700">Showing all results</p>
+  </div>
+  <div class="audit-show-filter-cards grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 mb-6" id="audit-filter-cards">
+    <% [
+      { label: "Total", value: report.total, text: "text-slate-700", filter: "all" },
+      { label: "Passed", value: report.passed, text: "text-green-700", filter: "pass" },
+      { label: "Failed", value: report.failed, text: "text-red-700", filter: "fail" },
+      { label: "Warnings", value: report.warnings, text: "text-amber-700", filter: "warning" },
+      { label: "Skipped", value: report.skipped, text: "text-gray-500", filter: "skip" }
+    ].each do |s| %>
+      <button
+        type="button"
+        data-filter-card
+        data-filter="<%= s[:filter] %>"
+        class="audit-show-filter-card bg-white border border-gray-100 shadow-sm text-center transition duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer"
+      >
+        <p class="audit-show-filter-value font-bold <%= s[:text] %>"><%= s[:value] %></p>
+        <p class="audit-show-filter-label text-gray-400 mt-1"><%= s[:label] %></p>
+      </button>
+    <% end %>
+  </div>
+
+  <div class="audit-show-results-shell px-6 py-4">
+    <div class="flex items-center justify-between mb-2">
+      <p class="text-sm font-semibold text-gray-700">Overall Pass Rate</p>
+      <p class="text-sm font-bold <%= pass_pct >= 80 ? 'text-green-600' : pass_pct >= 50 ? 'text-amber-600' : 'text-red-600' %>"><%= pass_pct %>%</p>
+    </div>
+    <div class="app-progress-meter app-progress-meter--summary" data-progress-meter>
+      <div class="app-progress-meter__segment app-progress-meter__segment--passed" data-progress-segment data-width="<%= (report.passed.to_f / report.total * 100).round rescue 0 %>"></div>
+      <div class="app-progress-meter__segment app-progress-meter__segment--failed" data-progress-segment data-width="<%= (report.failed.to_f / report.total * 100).round rescue 0 %>"></div>
+      <div class="app-progress-meter__segment app-progress-meter__segment--warning" data-progress-segment data-width="<%= (report.warnings.to_f / report.total * 100).round rescue 0 %>"></div>
+    </div>
+    <div class="flex items-center gap-4 mt-2 text-xs text-gray-400">
+      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>Passed</span>
+      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-400 inline-block"></span>Failed</span>
+      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span>Warnings</span>
+      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-gray-200 inline-block"></span>Skipped</span>
+    </div>
+  </div>
+
+  <% report.checks_by_category.each do |category, checks| %>
+    <% cat_passed = checks.count { |c| c["status"] == "pass" } %>
+    <% cat_failed = checks.count { |c| c["status"] == "fail" } %>
+    <% cat_warning = checks.count { |c| c["status"] == "warning" } %>
+    <% cat_color = cat_failed > 0 ? "red" : cat_warning > 0 ? "amber" : "green" %>
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-4 overflow-hidden" data-category-section>
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-50">
+        <div class="flex items-center gap-3">
+          <div class="w-1 h-6 rounded-full bg-<%= cat_color %>-400"></div>
+          <h3 class="text-sm font-bold text-gray-800"><%= category %></h3>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-semibold">
+          <% if cat_passed > 0 %>
+            <span class="px-2 py-0.5 rounded-full bg-green-50 text-green-700"><%= cat_passed %> passed</span>
+          <% end %>
+          <% if cat_failed > 0 %>
+            <span class="px-2 py-0.5 rounded-full bg-red-50 text-red-700"><%= cat_failed %> failed</span>
+          <% end %>
+          <% if cat_warning > 0 %>
+            <span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700"><%= cat_warning %> warnings</span>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="divide-y divide-gray-50">
+        <% checks.each do |check| %>
+          <% row_cfg = case check["status"]
+             when "pass" then { icon_color: "text-green-500", bg: "", badge: "bg-green-50 text-green-700", icon_path: "m4.5 12.75 6 6 9-13.5" }
+             when "fail" then { icon_color: "text-red-500", bg: "bg-red-50/40", badge: "bg-red-50 text-red-700", icon_path: "M6 18 18 6M6 6l12 12" }
+             when "warning" then { icon_color: "text-amber-500", bg: "bg-amber-50/30", badge: "bg-amber-50 text-amber-700", icon_path: "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" }
+             else { icon_color: "text-gray-300", bg: "", badge: "bg-gray-50 text-gray-400", icon_path: "M5 12h14" }
+             end %>
+          <div class="flex items-start gap-4 px-6 py-4 <%= row_cfg[:bg] %>" data-check-row data-status="<%= check["status"] %>">
+            <svg class="w-5 h-5 shrink-0 mt-0.5 <%= row_cfg[:icon_color] %>" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="<%= row_cfg[:icon_path] %>"/>
+            </svg>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <p class="text-sm font-semibold text-gray-800"><%= check["check_name"] %></p>
+                <span class="px-2 py-0.5 rounded-full text-xs font-semibold <%= row_cfg[:badge] %>"><%= check["status"]&.upcase %></span>
+              </div>
+              <p class="text-sm text-gray-500 mt-0.5"><%= check["message"] %></p>
+              <% if check["details"].present? && check["details"] != {} %>
+                <details class="mt-2">
+                  <summary class="text-xs text-indigo-500 cursor-pointer hover:text-indigo-700 font-medium">View details</summary>
+                  <pre class="mt-2 text-xs bg-gray-900 text-green-300 rounded-lg px-4 py-3 overflow-x-auto whitespace-pre-wrap"><%= JSON.pretty_generate(check["details"]) rescue check["details"].inspect %></pre>
+                </details>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

@@ -1,0 +1,63 @@
+<% if report&.processing? %>
+  <% current_step = report.check_progress.find { |step| step["status"] == "processing" } %>
+  <% progress_percent = report.checks_total.positive? ? ((report.checks_completed.to_f / report.checks_total) * 100).round : 0 %>
+  <div class="audit-show-progress-shell">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-500">Live Progress</p>
+        <h3 class="text-lg font-bold text-gray-900 mt-1 flex items-center gap-3">
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+            <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+          </span>
+          Running audit checks in real time
+        </h3>
+        <p class="text-sm text-gray-500 mt-1">
+          Completed <%= report.checks_completed %> of <%= report.checks_total %> checks
+          <% if current_step.present? %>
+            · Checking <span class="font-semibold text-blue-700"><%= current_step["label"] %></span> now
+          <% end %>
+        </p>
+      </div>
+      <div class="text-right">
+        <p class="text-3xl font-bold text-blue-700"><%= report.checks_completed %>/<%= report.checks_total %></p>
+        <p class="text-xs text-gray-400 mt-1">Live updates without page reload</p>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <div class="h-3 overflow-hidden rounded-full bg-blue-50 ring-1 ring-inset ring-blue-100" data-progress-meter>
+        <div class="h-full rounded-full bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 bg-[length:200%_100%] animate-pulse transition-all duration-700" data-progress-segment data-width="<%= [progress_percent, 8].max %>"></div>
+      </div>
+      <div class="mt-2 flex items-center gap-2 text-xs text-blue-600">
+        <span class="inline-flex h-2 w-2 rounded-full bg-blue-500 animate-ping"></span>
+        <span>Processing one check at a time with live status updates.</span>
+      </div>
+    </div>
+
+    <% if current_step.present? %>
+      <div class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/50 px-5 py-4">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex items-start gap-3 min-w-0">
+            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm">
+              <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+            </span>
+            <div class="min-w-0">
+              <p class="text-sm font-semibold text-gray-900"><%= current_step["label"] %></p>
+              <p class="text-xs text-gray-400 mt-1">
+                Attempt <%= current_step["attempts"].to_i %>/<%= current_step["max_attempts"].to_i.nonzero? || 2 %>
+              </p>
+              <p class="text-sm text-gray-600 mt-2"><%= current_step["message"].presence || "Running audit check..." %></p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Checking</span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,18 @@
+@layer components {
+  .audits-new .audit-new-page {
+    @apply max-w-2xl;
+  }
+
+  .audits-new .audit-new-card {
+    box-shadow: var(--app-shadow-sm);
+    @apply rounded-3xl border border-gray-100 bg-white p-8;
+  }
+
+  .audits-new .audit-new-zone-grid {
+    @apply grid grid-cols-3 gap-3;
+  }
+
+  .audits-new .audit-new-helper-card {
+    @apply rounded-xl border border-slate-100 bg-slate-50 p-4;
+  }
+}

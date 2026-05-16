@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "./base/root.css";
+@import "./layouts/application.css";
+@import "./pages/audits/index.css";
+@import "./pages/audits/new.css";
+@import "./pages/audits/show.css";
