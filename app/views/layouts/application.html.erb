@@ -11,7 +11,7 @@
     <%= favicon_link_tag "favicon/favicon-96x96.png", type: "image/png", sizes: "96x96" %>
     <%= tag.link rel: "apple-touch-icon", href: asset_path("favicon/apple-touch-icon.png"), sizes: "180x180" %>
     <%= tag.link rel: "manifest", href: asset_path("favicon/site.webmanifest") %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 

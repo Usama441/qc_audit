@@ -5,6 +5,11 @@ rm -f /rails/tmp/pids/server.pid
 
 # If running the rails server then create or migrate existing database
 if [ "$1" == "./bin/rails" ] && [ "$2" == "server" ]; then
+  if [ "${RAILS_ENV}" = "production" ] && [ ! -f /rails/public/assets/.manifest.json ]; then
+    echo "Precompiling assets for production..."
+    ./bin/rails assets:precompile
+  fi
+
   ./bin/rails db:prepare
 fi
 
