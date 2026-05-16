@@ -32,5 +32,6 @@ class AuditReport < ApplicationRecord
   def failed  = (summary || {})["failed"].to_i
   def warnings = (summary || {})["warnings"].to_i
   def skipped = (summary || {})["skipped"].to_i
+  def disabled = (summary || {})["disabled"].to_i
   def total   = (summary || {})["total"].to_i
 end

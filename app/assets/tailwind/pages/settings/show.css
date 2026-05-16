@@ -1,0 +1,48 @@
+@layer components {
+  .settings-show .settings-page {
+    @apply space-y-6 max-w-5xl;
+  }
+
+  .settings-show .settings-summary-card,
+  .settings-show .settings-section-card {
+    box-shadow: var(--app-shadow-sm);
+    @apply rounded-3xl border border-gray-100 bg-white;
+  }
+
+  .settings-show .settings-summary-card {
+    @apply p-6;
+  }
+
+  .settings-show .settings-section-card {
+    @apply overflow-hidden;
+  }
+
+  .settings-show .settings-section-header {
+    @apply flex items-center justify-between gap-4 border-b border-gray-100 px-6 py-4;
+  }
+
+  .settings-show .settings-rule-row {
+    @apply flex items-center justify-between gap-4 px-6 py-4;
+  }
+
+  .settings-show .settings-toggle {
+    @apply sr-only;
+  }
+
+  .settings-show .settings-toggle-shell {
+    @apply relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 transition-colors;
+  }
+
+  .settings-show .settings-toggle-shell::after {
+    content: "";
+    @apply absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform;
+  }
+
+  .settings-show .settings-toggle:checked + .settings-toggle-shell {
+    background: var(--app-brand);
+  }
+
+  .settings-show .settings-toggle:checked + .settings-toggle-shell::after {
+    transform: translateX(1.25rem);
+  }
+}

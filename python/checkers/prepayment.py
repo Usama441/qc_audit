@@ -1,42 +1,39 @@
-from checkers import CheckResult
+from checkers import result, selected
 from checkers.loader import find_row, last_numeric
 
 CATEGORY = "7. Prepayment"
+RULE_KEY = "prepayment.prepayment_vs_trial_balance"
 TOLERANCE = 0.01
 
 
-def run(sheets: dict, free_zone: str) -> list:
-    results = []
-    pp = sheets.get("prepayment")
-    tb = sheets.get("trial_balance")
+def run(sheets: dict, free_zone: str, enabled_rule_keys=None) -> list:
+    if not selected(enabled_rule_keys, RULE_KEY):
+        return []
 
-    if pp is None:
-        results.append(CheckResult("Prepayment vs Trial Balance", CATEGORY, "skip",
-                                   "Prepayment sheet not found."))
-        return results
+    prepayment = sheets.get("prepayment")
+    trial_balance = sheets.get("trial_balance")
 
-    total_row = find_row(pp, "total")
-    if total_row is None and not pp.empty:
-        total_row = pp.iloc[-1]
-    pp_total  = last_numeric(total_row)
+    if prepayment is None:
+        return [result(RULE_KEY, "Prepayment vs Trial Balance", CATEGORY, "skip", "Prepayment sheet not found.")]
 
-    tb_row  = find_row(tb, "prepayment") if tb is not None else None
-    tb_val  = last_numeric(tb_row)
+    total_row = find_row(prepayment, "total")
+    if total_row is None and not prepayment.empty:
+        total_row = prepayment.iloc[-1]
+    prepayment_total = last_numeric(total_row)
 
-    if pp_total is None:
-        results.append(CheckResult("Prepayment vs Trial Balance", CATEGORY, "skip",
-                                   "Could not identify total from Prepayment schedule."))
-    elif tb_val is None:
-        results.append(CheckResult("Prepayment vs Trial Balance", CATEGORY, "warning",
-                                   f"Prepayment schedule total: {pp_total:,.2f}. "
-                                   "No prepayment account found in Trial Balance to compare.",
-                                   {"schedule_total": round(pp_total,2)}))
-    elif abs(pp_total - tb_val) <= TOLERANCE:
-        results.append(CheckResult("Prepayment vs Trial Balance", CATEGORY, "pass",
-                                   f"Prepayment matches: Schedule={pp_total:,.2f}, TB={tb_val:,.2f}"))
-    else:
-        results.append(CheckResult("Prepayment vs Trial Balance", CATEGORY, "fail",
-                                   f"Prepayment mismatch: Schedule={pp_total:,.2f}, TB={tb_val:,.2f}",
-                                   {"schedule": round(pp_total,2), "tb": round(tb_val,2)}))
+    trial_balance_row = find_row(trial_balance, "prepayment") if trial_balance is not None else None
+    trial_balance_value = last_numeric(trial_balance_row)
 
-    return results
+    if prepayment_total is None:
+        return [result(RULE_KEY, "Prepayment vs Trial Balance", CATEGORY, "skip",
+                       "Could not identify total from Prepayment schedule.")]
+    if trial_balance_value is None:
+        return [result(RULE_KEY, "Prepayment vs Trial Balance", CATEGORY, "warning",
+                       f"Prepayment schedule total: {prepayment_total:,.2f}. No prepayment account found in Trial Balance to compare.",
+                       {"schedule_total": round(prepayment_total, 2)})]
+    if abs(prepayment_total - trial_balance_value) <= TOLERANCE:
+        return [result(RULE_KEY, "Prepayment vs Trial Balance", CATEGORY, "pass",
+                       f"Prepayment matches: Schedule={prepayment_total:,.2f}, TB={trial_balance_value:,.2f}")]
+    return [result(RULE_KEY, "Prepayment vs Trial Balance", CATEGORY, "fail",
+                   f"Prepayment mismatch: Schedule={prepayment_total:,.2f}, TB={trial_balance_value:,.2f}",
+                   {"schedule": round(prepayment_total, 2), "tb": round(trial_balance_value, 2)})]

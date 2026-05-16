@@ -1,21 +1,21 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  job_id: MyString
-  task_name: MyString
-  status: MyString
-  payload: 
-  result: 
-  error_message: MyText
+  job_id: job-one
+  task_name: audit_check
+  status: completed
+  payload: {}
+  result: {}
+  error_message:
   started_at: 2026-05-15 14:15:02
   completed_at: 2026-05-15 14:15:02
 
 two:
-  job_id: MyString
-  task_name: MyString
-  status: MyString
-  payload: 
-  result: 
-  error_message: MyText
+  job_id: job-two
+  task_name: retry_audit_check
+  status: failed
+  payload: {}
+  result: {}
+  error_message: Queue enqueue failed
   started_at: 2026-05-15 14:15:02
   completed_at: 2026-05-15 14:15:02

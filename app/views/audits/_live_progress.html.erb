@@ -1,6 +1,7 @@
 <% if report&.processing? %>
   <% current_step = report.check_progress.find { |step| step["status"] == "processing" } %>
   <% progress_percent = report.checks_total.positive? ? ((report.checks_completed.to_f / report.checks_total) * 100).round : 0 %>
+  <% disabled_steps = report.check_progress.count { |step| step["outcome"] == "disabled" } %>
   <div class="audit-show-progress-shell">
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div>
@@ -12,12 +13,15 @@
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
             </svg>
           </span>
-          Running audit checks in real time
+          Running detailed audit rules in real time
         </h3>
         <p class="text-sm text-gray-500 mt-1">
-          Completed <%= report.checks_completed %> of <%= report.checks_total %> checks
+          Completed <%= report.checks_completed %> of <%= report.checks_total %> rules
           <% if current_step.present? %>
             · Checking <span class="font-semibold text-blue-700"><%= current_step["label"] %></span> now
+          <% end %>
+          <% if disabled_steps.positive? %>
+            · <span class="font-semibold text-slate-600"><%= disabled_steps %> disabled</span>
           <% end %>
         </p>
       </div>
@@ -33,31 +37,47 @@
       </div>
       <div class="mt-2 flex items-center gap-2 text-xs text-blue-600">
         <span class="inline-flex h-2 w-2 rounded-full bg-blue-500 animate-ping"></span>
-        <span>Processing one check at a time with live status updates.</span>
+        <span>Each detailed rule is tracked individually, including disabled rules.</span>
       </div>
     </div>
 
-    <% if current_step.present? %>
-      <div class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/50 px-5 py-4">
-        <div class="flex items-start justify-between gap-4">
-          <div class="flex items-start gap-3 min-w-0">
-            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm">
-              <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-              </svg>
-            </span>
-            <div class="min-w-0">
-              <p class="text-sm font-semibold text-gray-900"><%= current_step["label"] %></p>
-              <p class="text-xs text-gray-400 mt-1">
-                Attempt <%= current_step["attempts"].to_i %>/<%= current_step["max_attempts"].to_i.nonzero? || 2 %>
-              </p>
-              <p class="text-sm text-gray-600 mt-2"><%= current_step["message"].presence || "Running audit check..." %></p>
+    <div class="mt-5 grid gap-3 max-h-[28rem] overflow-y-auto pr-1">
+      <% report.check_progress.each do |step| %>
+        <% step_cfg =
+          if step["status"] == "processing"
+            { dot: "bg-blue-500", badge: "bg-blue-100 text-blue-700", label: "Checking", shell: "border-blue-100 bg-blue-50/60" }
+          else
+            case step["outcome"]
+            when "pass"
+              { dot: "bg-green-500", badge: "bg-green-50 text-green-700", label: "Passed", shell: "border-gray-100 bg-white" }
+            when "warning"
+              { dot: "bg-amber-500", badge: "bg-amber-50 text-amber-700", label: "Warning", shell: "border-gray-100 bg-white" }
+            when "fail"
+              { dot: "bg-red-500", badge: "bg-red-50 text-red-700", label: "Failed", shell: "border-gray-100 bg-white" }
+            when "disabled"
+              { dot: "bg-slate-400", badge: "bg-slate-100 text-slate-700", label: "Disabled", shell: "border-slate-200 bg-slate-50/80" }
+            else
+              { dot: "bg-gray-300", badge: "bg-gray-50 text-gray-500", label: "Pending", shell: "border-gray-100 bg-white" }
+            end
+          end %>
+
+        <div class="rounded-2xl border px-4 py-3 <%= step_cfg[:shell] %>">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-3 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0 mt-1.5 <%= step_cfg[:dot] %>"></span>
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-gray-900"><%= step["label"] %></p>
+                <p class="text-xs text-gray-400 mt-1"><%= step["section_label"] %></p>
+                <p class="text-xs text-gray-400 mt-1">
+                  Attempt <%= step["attempts"].to_i %>/<%= step["max_attempts"].to_i.nonzero? || 2 %>
+                </p>
+                <p class="text-sm text-gray-600 mt-2"><%= step["message"].presence || "Waiting to run." %></p>
+              </div>
             </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 <%= step_cfg[:badge] %>"><%= step_cfg[:label] %></span>
           </div>
-          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Checking</span>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
 <% end %>

@@ -41,6 +41,14 @@
             <%= image_tag "pngs/management.png", alt: "", class: "app-nav-image" %>
             New Audit
           <% end %>
+
+          <%= link_to settings_path,
+                class: "app-nav-link #{request.path == settings_path ? 'is-active' : ''}" do %>
+            <svg class="app-nav-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9m-9 6h9m-9 6h9M4.5 6h.008v.008H4.5V6Zm0 6h.008v.008H4.5V12Zm0 6h.008v.008H4.5V18Z"/>
+            </svg>
+            Settings
+          <% end %>
         </nav>
 
         <%# Sidebar footer %>

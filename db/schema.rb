@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_15_095607) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_16_100001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,6 +42,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_15_095607) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "audit_settings", force: :cascade do |t|
+    t.jsonb "enabled_rules", default: {}, null: false
+    t.string "singleton_key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["singleton_key"], name: "index_audit_settings_on_singleton_key", unique: true
+  end
+
   create_table "audit_reports", force: :cascade do |t|
     t.bigint "audit_upload_id", null: false
     t.datetime "created_at", null: false
@@ -52,6 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_15_095607) do
   end
 
   create_table "audit_uploads", force: :cascade do |t|
+    t.jsonb "check_settings_snapshot", default: {}, null: false
     t.datetime "created_at", null: false
     t.string "free_zone"
     t.string "python_job_id"

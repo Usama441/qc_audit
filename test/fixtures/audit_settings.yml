@@ -1,0 +1,5 @@
+global:
+  singleton_key: global
+  enabled_rules:
+    general_ledger.gl_vs_trial_balance: true
+    trial_balance.sum_of_balances_zero: true

@@ -84,6 +84,10 @@
     @apply h-4 w-4 shrink-0 object-contain opacity-90 transition-all;
   }
 
+  .app-nav-icon {
+    @apply h-4 w-4 shrink-0 text-slate-400 transition-all;
+  }
+
   .app-nav-link.is-active {
     background: var(--app-brand);
     box-shadow: var(--app-shadow-sm);
@@ -95,9 +99,17 @@
     @apply opacity-100;
   }
 
+  .app-nav-link:hover .app-nav-icon {
+    @apply text-white;
+  }
+
   .app-nav-link.is-active .app-nav-image {
     filter: brightness(0) invert(1);
     @apply opacity-100;
+  }
+
+  .app-nav-link.is-active .app-nav-icon {
+    @apply text-white;
   }
 
   .app-sidebar-footer {
@@ -171,5 +183,9 @@
 
   .app-progress-meter__segment--warning {
     @apply bg-amber-400;
+  }
+
+  .app-progress-meter__segment--disabled {
+    @apply bg-slate-500;
   }
 }

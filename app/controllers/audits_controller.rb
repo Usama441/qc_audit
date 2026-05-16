@@ -9,6 +9,7 @@ class AuditsController < ApplicationController
 
   def create
     @upload = AuditUpload.new(upload_params)
+    @upload.check_settings_snapshot = AuditSetting.instance.resolved_enabled_rules
 
     if @upload.save
       begin
@@ -18,7 +19,8 @@ class AuditsController < ApplicationController
           upload_id: @upload.id,
           file_path:  file_path,
           original_filename: @upload.excel_file.filename.to_s,
-          free_zone:  @upload.free_zone
+          free_zone:  @upload.free_zone,
+          enabled_rules: @upload.check_settings
         })
         @upload.update!(python_job_id: job_id)
         redirect_to audit_path(@upload), notice: "File uploaded. Running audit checks…"
@@ -45,10 +47,15 @@ class AuditsController < ApplicationController
   def retry_check
     @upload = AuditUpload.find(params[:id])
     check_key = params[:check_key].to_s
-    check_label = audit_step_labels.to_h[check_key]
+    check_label = AuditRuleCatalog.rule_label(check_key)
 
     unless check_label
       redirect_to audit_path(@upload), alert: "Unknown check selected for retry."
+      return
+    end
+
+    unless @upload.check_settings.fetch(check_key, true)
+      redirect_to audit_path(@upload), alert: "#{check_label} is disabled in Settings and cannot be retried."
       return
     end
 
@@ -65,7 +72,8 @@ class AuditsController < ApplicationController
         file_path: file_path,
         original_filename: @upload.excel_file.filename.to_s,
         free_zone: @upload.free_zone,
-        check_key: check_key
+        check_key: check_key,
+        enabled_rules: @upload.check_settings
       })
       @upload.update!(status: "processing", python_job_id: job_id)
       redirect_to audit_path(@upload), notice: "#{check_label} retry started."
@@ -97,7 +105,8 @@ class AuditsController < ApplicationController
         file_path: file_path,
         original_filename: @upload.excel_file.filename.to_s,
         free_zone: @upload.free_zone,
-        check_keys: retryable_keys
+        check_keys: retryable_keys,
+        enabled_rules: @upload.check_settings
       })
       @upload.update!(status: "processing", python_job_id: job_id)
       redirect_to audit_path(@upload), notice: "Bulk retry started for #{retryable_keys.length} checks."
@@ -132,11 +141,12 @@ class AuditsController < ApplicationController
         "failed" => 1,
         "warnings" => 0,
         "skipped" => 0,
+        "disabled" => 0,
         "state" => "failed",
         "current_check" => nil,
-        "checks_total" => audit_step_labels.length,
+        "checks_total" => AuditRuleCatalog.rule_keys.length,
         "checks_completed" => 0,
-        "check_progress" => build_check_progress
+        "check_progress" => build_check_progress(upload)
       }
     }
 
@@ -158,53 +168,24 @@ class AuditsController < ApplicationController
         "failed" => 0,
         "warnings" => 0,
         "skipped" => 0,
+        "disabled" => 0,
         "state" => "processing",
         "current_check" => nil,
-        "checks_total" => audit_step_labels.length,
+        "checks_total" => AuditRuleCatalog.rule_keys.length,
         "checks_completed" => 0,
-        "check_progress" => build_check_progress
+        "check_progress" => build_check_progress(upload)
       }
     )
   end
 
-  def build_check_progress
-    audit_step_labels.map do |key, label|
-      {
-        "key" => key,
-        "label" => label,
-        "status" => "pending",
-        "outcome" => nil,
-        "attempts" => 0,
-        "max_attempts" => 2,
-        "message" => "Waiting to run.",
-        "retryable" => false
-      }
-    end
-  end
-
-  def audit_step_labels
-    [
-      ["general_ledger", "General Ledger vs Trial Balance"],
-      ["trial_balance", "Trial Balance"],
-      ["balance_sheet", "Balance Sheet"],
-      ["profit_loss", "Profit & Loss"],
-      ["equity_statement", "Equity Statement"],
-      ["cash_flow", "Cash Flow"],
-      ["prepayment", "Prepayment"],
-      ["sales", "Sales"],
-      ["sl_control", "SL Control"],
-      ["pl_control", "PL Control"],
-      ["bank_control", "Bank Control"],
-      ["accruals", "Accruals"],
-      ["share_capital", "Share Capital"],
-      ["vat_control", "VAT Control"]
-    ]
+  def build_check_progress(upload)
+    AuditRuleCatalog.progress_entries(upload.check_settings)
   end
 
   def mark_check_processing!(upload, check_key, check_label)
     report = upload.audit_report || ensure_processing_report!(upload)
     summary = (report.summary || {}).deep_dup
-    progress = (summary["check_progress"] || build_check_progress).map do |step|
+    progress = (summary["check_progress"] || build_check_progress(upload)).map do |step|
       step = step.deep_dup
       if step["key"] == check_key
         step["status"] = "processing"
@@ -223,7 +204,7 @@ class AuditsController < ApplicationController
   def mark_checks_processing!(upload, check_keys)
     report = upload.audit_report || ensure_processing_report!(upload)
     summary = (report.summary || {}).deep_dup
-    progress = (summary["check_progress"] || build_check_progress).map do |step|
+    progress = (summary["check_progress"] || build_check_progress(upload)).map do |step|
       step = step.deep_dup
       if check_keys.include?(step["key"])
         step["status"] = "pending"
@@ -249,7 +230,7 @@ class AuditsController < ApplicationController
     return [] if report.blank?
 
     report.check_progress.filter_map do |step|
-      step["key"] if step["retryable"]
+      step["key"] if step["retryable"] && AuditRuleCatalog.rule?(step["key"])
     end
   end
 

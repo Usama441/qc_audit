@@ -23,6 +23,7 @@ class AuditUpload < ApplicationRecord
   def completed? = status == "completed"
   def failed?    = status == "failed"
   def pending?   = status == "pending"
+  def check_settings = AuditRuleCatalog.normalize_enabled_rules(check_settings_snapshot)
 
   private
 

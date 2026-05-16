@@ -2,10 +2,32 @@
 
 one:
   audit_upload: one
-  results: 
-  summary: 
+  results: []
+  summary:
+    total: 0
+    passed: 0
+    failed: 0
+    warnings: 0
+    skipped: 0
+    disabled: 0
+    state: completed
+    current_check:
+    checks_total: 0
+    checks_completed: 0
+    check_progress: []
 
 two:
   audit_upload: two
-  results: 
-  summary: 
+  results: []
+  summary:
+    total: 1
+    passed: 0
+    failed: 1
+    warnings: 0
+    skipped: 0
+    disabled: 0
+    state: failed
+    current_check:
+    checks_total: 0
+    checks_completed: 0
+    check_progress: []

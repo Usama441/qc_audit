@@ -1,0 +1,280 @@
+{
+  "sections": [
+    {
+      "section_key": "general_ledger",
+      "section_label": "1. General Ledger",
+      "rules": [
+        {
+          "rule_key": "general_ledger.gl_vs_trial_balance",
+          "rule_label": "GL vs Trial Balance",
+          "description": "Compare general ledger balances to trial balance balances.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "trial_balance",
+      "section_label": "2. Trial Balance",
+      "rules": [
+        {
+          "rule_key": "trial_balance.sum_of_balances_zero",
+          "rule_label": "Sum of Balances = 0",
+          "description": "Check that trial balance debit and credit totals net to zero.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "trial_balance.dividends_without_share_capital",
+          "rule_label": "Dividends Without Share Capital",
+          "description": "Flag dividends when share capital is missing or zero.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "trial_balance.statutory_reserve_free_zone",
+          "rule_label": "Statutory Reserve (Free Zone)",
+          "description": "Require statutory reserve accounts for free zone entities.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "trial_balance.equity_cross_check_bs_vs_soce",
+          "rule_label": "Equity Cross-Check (BS vs SoCE)",
+          "description": "Compare total equity between the balance sheet and SoCE.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "balance_sheet",
+      "section_label": "3. Balance Sheet",
+      "rules": [
+        {
+          "rule_key": "balance_sheet.assets_equals_equity_plus_liabilities",
+          "rule_label": "Assets = Equity + Liabilities",
+          "description": "Check that the balance sheet balances.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "balance_sheet.account_code_links",
+          "rule_label": "Account Code Links",
+          "description": "Validate balance sheet account code prefixes.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "profit_loss",
+      "section_label": "4. Profit & Loss",
+      "rules": [
+        {
+          "rule_key": "profit_loss.revenue_below_sbr_threshold",
+          "rule_label": "Revenue < 3,000,000 (SBR)",
+          "description": "Flag revenue below the Small Business Relief threshold.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "profit_loss.corporate_tax_threshold",
+          "rule_label": "Profit > 375,000 (Corporate Tax)",
+          "description": "Flag profits above the corporate tax threshold.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "profit_loss.account_code_links_4x_5x",
+          "rule_label": "Account Code Links (4x/5x)",
+          "description": "Validate revenue and expense account code prefixes.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "profit_loss.non_deductible_expenses",
+          "rule_label": "Non-Deductible Expenses",
+          "description": "Highlight entertainment, fines, penalties, and similar items.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "equity_statement",
+      "section_label": "5. Equity Statement",
+      "rules": [
+        {
+          "rule_key": "equity_statement.net_profit_soce_vs_soci",
+          "rule_label": "Net Profit: SoCE vs SoCI",
+          "description": "Compare net profit between the equity statement and SoCI.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "equity_statement.share_capital_soce_vs_tb",
+          "rule_label": "Share Capital: SoCE vs TB",
+          "description": "Compare share capital between SoCE and trial balance.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "equity_statement.owner_current_account_soce_vs_tb",
+          "rule_label": "Owner Current Account: SoCE vs TB",
+          "description": "Compare owner current account between SoCE and trial balance.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "equity_statement.statutory_reserve_rate",
+          "rule_label": "Statutory Reserve Rate",
+          "description": "Validate the reserve rate for the selected entity type.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "equity_statement.soce_totals_consistency",
+          "rule_label": "SoCE Totals Consistency",
+          "description": "Check that SoCE totals and balances are internally consistent.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "cash_flow",
+      "section_label": "6. Cash Flow",
+      "rules": [
+        {
+          "rule_key": "cash_flow.profit_before_tax_cf_vs_soci",
+          "rule_label": "Profit Before Tax (CF vs SoCI)",
+          "description": "Compare profit before tax between the cash flow and SoCI.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "cash_flow.depreciation_added_back",
+          "rule_label": "Depreciation Added Back",
+          "description": "Check that depreciation is added back in operating cash flow.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "cash_flow.bad_debt_added_back",
+          "rule_label": "Bad Debt Added Back",
+          "description": "Check bad debt or ECL add-back treatment.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "cash_flow.opening_cash_vs_prior_year_bs",
+          "rule_label": "Opening Cash vs Prior Year BS",
+          "description": "Compare opening cash to the prior year balance sheet.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "cash_flow.closing_cash_vs_balance_sheet",
+          "rule_label": "Closing Cash vs Balance Sheet",
+          "description": "Compare closing cash to the current balance sheet.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "prepayment",
+      "section_label": "7. Prepayment",
+      "rules": [
+        {
+          "rule_key": "prepayment.prepayment_vs_trial_balance",
+          "rule_label": "Prepayment vs Trial Balance",
+          "description": "Compare the prepayment schedule to the trial balance.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "sales",
+      "section_label": "8. Sales",
+      "rules": [
+        {
+          "rule_key": "sales.invoice_sequence",
+          "rule_label": "Invoice Sequence",
+          "description": "Check whether invoice numbers are sequential.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "sales.total_sales_vs_soci_revenue",
+          "rule_label": "Total Sales vs SoCI Revenue",
+          "description": "Compare the sales schedule total to SoCI revenue.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "sl_control",
+      "section_label": "9. SL Control",
+      "rules": [
+        {
+          "rule_key": "sl_control.no_negative_ar_balances",
+          "rule_label": "No Negative AR Balances",
+          "description": "Check aged receivables for negative balances.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "sl_control.total_ar_vs_balance_sheet",
+          "rule_label": "Total AR vs Balance Sheet",
+          "description": "Compare total receivables to the balance sheet.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "pl_control",
+      "section_label": "10. PL Control",
+      "rules": [
+        {
+          "rule_key": "pl_control.total_ap_vs_balance_sheet",
+          "rule_label": "Total AP vs Balance Sheet",
+          "description": "Compare total payables to the balance sheet.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "bank_control",
+      "section_label": "11. Bank Control",
+      "rules": [
+        {
+          "rule_key": "bank_control.bank_total_vs_balance_sheet",
+          "rule_label": "Bank Total vs Balance Sheet",
+          "description": "Compare total bank balances to the balance sheet.",
+          "default_enabled": true
+        },
+        {
+          "rule_key": "bank_control.all_non_zero_bank_accounts_included",
+          "rule_label": "All Non-Zero Bank Accounts Included",
+          "description": "Confirm all non-zero bank accounts are included in the schedule.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "accruals",
+      "section_label": "12. Accruals",
+      "rules": [
+        {
+          "rule_key": "accruals.audit_fees_accrual_vs_balance_sheet",
+          "rule_label": "Audit Fees Accrual vs Balance Sheet",
+          "description": "Compare audit fee accruals to the balance sheet.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "share_capital",
+      "section_label": "13. Share Capital",
+      "rules": [
+        {
+          "rule_key": "share_capital.share_capital_vs_balance_sheet",
+          "rule_label": "Share Capital vs Balance Sheet",
+          "description": "Compare share capital schedule totals to the balance sheet.",
+          "default_enabled": true
+        }
+      ]
+    },
+    {
+      "section_key": "vat_control",
+      "section_label": "14. VAT Control",
+      "rules": [
+        {
+          "rule_key": "vat_control.vat_control_vs_balance_sheet",
+          "rule_label": "VAT Control vs Balance Sheet",
+          "description": "Compare the VAT control total to the balance sheet.",
+          "default_enabled": true
+        }
+      ]
+    }
+  ]
+}

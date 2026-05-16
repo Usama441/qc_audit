@@ -14,4 +14,7 @@ Rails.application.routes.draw do
     post :retry_check, on: :member
     post :retry_all_checks, on: :member
   end
+  resource :settings, only: [:show, :update] do
+    post :reset, on: :collection
+  end
 end
