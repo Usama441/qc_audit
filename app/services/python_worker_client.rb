@@ -1,5 +1,5 @@
 class PythonWorkerClient
-  QUEUE_KEY = "qc_audit:jobs"
+  QUEUE_KEY = "office_tools:jobs"
 
   def self.enqueue(task_name, payload = {})
     job_id = SecureRandom.uuid
@@ -26,4 +26,5 @@ class PythonWorkerClient
     )
     raise
   end
+
 end

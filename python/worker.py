@@ -1,6 +1,6 @@
 """
 Redis queue consumer — reads jobs pushed by Rails (PythonWorkerClient)
-from the qc_audit:jobs list and dispatches them to Celery tasks.
+from the office_tools:jobs list and dispatches them to Celery tasks.
 
 Run with: python worker.py
 """

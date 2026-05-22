@@ -8,13 +8,13 @@ services:
     environment:
       POSTGRES_USER:     ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
-      POSTGRES_DB:       ${DB_NAME:-qc_audit_development}
+      POSTGRES_DB:       ${DB_NAME:-office_tools_development}
     ports:
       - "127.0.0.1:${DB_PORT:-5432}:${DB_PORT:-5432}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-qc_audit_development} -p ${DB_PORT:-5432}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-office_tools_development} -p ${DB_PORT:-5432}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -93,7 +93,7 @@ services:
         condition: service_healthy
     environment:
       REDIS_URL:           ${REDIS_URL:-redis://redis:6379/0}
-      DATABASE_URL:        ${DATABASE_URL:-postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-qc_audit_development}}
+      DATABASE_URL:        ${DATABASE_URL:-postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-office_tools_development}}
       MAX_WORKBOOK_SIZE_MB: ${MAX_WORKBOOK_SIZE_MB:-30}
     volumes:
       - ./python:/app
@@ -113,7 +113,7 @@ services:
         condition: service_healthy
     environment:
       REDIS_URL:           ${REDIS_URL:-redis://redis:6379/0}
-      DATABASE_URL:        ${DATABASE_URL:-postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-qc_audit_development}}
+      DATABASE_URL:        ${DATABASE_URL:-postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-office_tools_development}}
       MAX_WORKBOOK_SIZE_MB: ${MAX_WORKBOOK_SIZE_MB:-30}
     volumes:
       - ./python:/app

@@ -2,7 +2,7 @@ from celery import Celery
 from config import REDIS_URL
 
 app = Celery(
-    "qc_audit",
+    "office_tools",
     broker=REDIS_URL,
     backend=REDIS_URL,
     include=["tasks.qc_tasks", "tasks.audit_tasks"],
