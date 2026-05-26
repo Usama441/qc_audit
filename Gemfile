@@ -44,7 +44,7 @@ gem "tailwindcss-rails"
 # Redis client for publishing jobs to Python Celery workers
 gem "redis", "~> 5.0"
 # Pin parallel to version compatible with Ruby 3.2
-gem "parallel", "< 2.1.0"
+gem "parallel", "< 2.2.0"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
